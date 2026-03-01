@@ -17,16 +17,6 @@ const [applications, setApplications] = useState([])
 
   const [jobText, setJobText] = useState('')
 
-  async function handleParse() {
-    const res = await api.post('/parse-job', { text: jobText })
-    setForm(prev => ({
-      ...prev,
-      company: res.data.company || '',
-      role: res.data.role || '',
-      notes: res.data.notes || ''
-    }))
-  }
-
   useEffect(() => {
     // check if user is already logged in on page load
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -98,12 +88,31 @@ const [applications, setApplications] = useState([])
       notes: app.notes || ''
     })
   }
+
+  async function handleParse() {
+    const res = await api.post('/parse-job', { text: jobText })
+    setForm(prev => ({
+      ...prev,
+      company: res.data.company || '',
+      role: res.data.role || '',
+      notes: res.data.notes || ''
+    }))
+  }
+
     
   return (
     <div>
       <h1>Job Tracker</h1>
       <p>Welcome, {session.user.email}</p>
       <button onClick={() => supabase.auth.signOut()}>Sign out</button>
+
+      <textarea 
+        placeholder="Paste job description here..."
+        value={jobText}
+        onChange={e => setJobText(e.target.value)}
+        rows={4}
+      />
+      <button type="button" onClick={handleParse}>Parse Job</button>
 
       <form onSubmit={handleSubmit}>
         <input name="company" placeholder="Company" value={form.company} onChange={handleChange} />

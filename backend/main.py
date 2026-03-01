@@ -4,10 +4,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from database import supabase
 from pydantic import BaseModel
 from typing import Optional
-import anthropic
+import google.generativeai as genai
 import os
-
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 app = FastAPI()
 security = HTTPBearer()
@@ -56,29 +54,26 @@ def delete_application(id: str, user=Depends(get_current_user)):
     supabase.table("applications").delete().eq("id", id).eq("user_id", user.id).execute()
     return {"message": "deleted"}
 
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+gemini = genai.GenerativeModel("gemini-2.0-flash-lite")
+
 @app.post("/parse-job")
 def parse_job(payload: dict, user=Depends(get_current_user)):
     text = payload.get("text", "")
     
-    message = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=1024,
-        messages=[
-            {
-                "role": "user",
-                "content": f"""Extract job details from this job description and return ONLY a JSON object with these fields:
-                - company
-                - role
-                - notes (a brief 1-2 sentence summary of the role)
-                
-                Job description:
-                {text}
-                
-                Return only valid JSON, no explanation."""
-            }
-        ]
+    response = gemini.generate_content(
+        f"""Extract job details from this job description and return ONLY a JSON object with these fields:
+        - company
+        - role
+        - notes (a brief 1-2 sentence summary of the role)
+        
+        Job description:
+        {text}
+        
+        Return only valid JSON, no explanation, no markdown backticks."""
     )
     
     import json
-    result = json.loads(message.content[0].text)
+    result = json.loads(response.text)
     return result
