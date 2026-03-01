@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import api from './api'
 import './App.css'
+import supabase from './supabase'
 
 function App() {
-  const [applications, setApplications] = useState([])
+const [applications, setApplications] = useState([])
+ const [session, setSession] = useState(null)
   const [form, setForm] = useState({
     company: '',
     role: '',
@@ -11,10 +13,50 @@ function App() {
     job_url: '',
     notes: ''
   })
+  const [editingId, setEditingId] = useState(null)
+
+  const [jobText, setJobText] = useState('')
+
+  async function handleParse() {
+    const res = await api.post('/parse-job', { text: jobText })
+    setForm(prev => ({
+      ...prev,
+      company: res.data.company || '',
+      role: res.data.role || '',
+      notes: res.data.notes || ''
+    }))
+  }
 
   useEffect(() => {
-    api.get('/applications').then(res => setApplications(res.data))
+    // check if user is already logged in on page load
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+
+    // listen for login/logout
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
+
+  useEffect(() => {
+    if (session) {
+      api.get('/applications').then(res => setApplications(res.data))
+    }
+  }, [session])
+
+  if (!session) {
+    return (
+      <div>
+        <h1>Job Tracker</h1>
+        <button onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}>
+          Sign in with Google
+        </button>
+      </div>
+    )
+  }
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -46,8 +88,6 @@ function App() {
     })
   }
 
-  const [editingId, setEditingId] = useState(null)
-
   function handleEdit(app) {
     setEditingId(app.id)
     setForm({
@@ -62,6 +102,8 @@ function App() {
   return (
     <div>
       <h1>Job Tracker</h1>
+      <p>Welcome, {session.user.email}</p>
+      <button onClick={() => supabase.auth.signOut()}>Sign out</button>
 
       <form onSubmit={handleSubmit}>
         <input name="company" placeholder="Company" value={form.company} onChange={handleChange} />
