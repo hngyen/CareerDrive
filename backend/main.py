@@ -8,14 +8,16 @@ from google import genai as google_genai
 import os
 import time
 
-# "http://localhost:5173"
-
 app = FastAPI()
 security = HTTPBearer()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["careerdrive.vercel.app/"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "https://careerdrive.vercel.app"
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
