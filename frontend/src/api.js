@@ -2,7 +2,7 @@ import axios from 'axios'
 import supabase from './supabase'
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000'
+  baseURL: 'https://careerdrive.onrender.com'
 })
 
 api.interceptors.request.use(async (config) => {
