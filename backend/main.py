@@ -96,11 +96,11 @@ def parse_job(payload: dict, user=Depends(get_current_user)):
                 "company": "string",
                 "role": "string",
                 "notes": "1-2 sentence technical summary focusing on the core challenge of the role.",
-                "match_score": "integer 0-10 (weighted: 50% Technical Stack, 30% Domain Experience, 20% Education/Projects)",
+                "match_score": "integer 0-100 (weighted: 50% Technical Stack, 30% Domain Experience, 20% Education/Projects)",
                 "pros": ["Up to 3 specific technical strengths or library overlaps"],
                 "cons": ["Up to 3 specific tech gaps, missing cloud providers, or seniority mismatches"],
                 Rules:
-                1. Be objective. If the JD asks for 5 years of C++ and the user has 1 year of Python, the match_score must reflect that (e.g., < 3).
+                1. Be objective. If the JD asks for 5 years of C++ and the user has 1 year of Python, the match_score must reflect that (e.g., < 30).
                 2. If skills are 'Not provided', match_score should be 0.
                 3. Return only valid JSON, no explanation, no markdown backticks.
 
@@ -112,7 +112,7 @@ def parse_job(payload: dict, user=Depends(get_current_user)):
                 {text}""",
             config={"temperature": 0}
         )
-        print("RAW RESPONSE:", response.text)
+
         import json
         result = json.loads(response.text)
         success = True

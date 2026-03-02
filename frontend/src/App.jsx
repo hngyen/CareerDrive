@@ -1,337 +1,310 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import api from './api'
-import './App.css'
 import supabase from './supabase'
-import Analytics from './components/Analytics'
-import AdminDashboard from './components/AdminDashboard'
+import Analytics from './components/Analytics.jsx' 
+import AdminDashboard from './components/AdminDashboard.jsx'
+import ApplicationCard from './ApplicationCard';
+
+// suitability score ring
+const MatchRing = ({ score }) => {
+  const safeScore = Math.min(Math.max(score || 0, 0), 100);
+  
+  const radius = 18;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (safeScore / 100) * circumference;
+
+  const getColorClass = () => {
+    if (safeScore >= 70) return 'text-emerald-500';
+    if (safeScore >= 40) return 'text-amber-500';
+    return 'text-rose-500';
+  };
+
+  return (
+    <div className="relative flex items-center justify-center w-12 h-12 flex-shrink-0">
+      <svg className="w-full h-full transform -rotate-90">
+
+        {/* background*/}
+        <circle 
+          cx="24" cy="24" r={radius} 
+          stroke="currentColor" strokeWidth="3.5" 
+          fill="transparent" 
+          className="text-slate-100" 
+        />
+        {/* progress ring */}
+        <circle
+          cx="24" cy="24" r={radius} 
+          stroke="currentColor" strokeWidth="3.5" 
+          fill="transparent"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          className={`transition-all duration-1000 ease-out ${getColorClass()}`}
+          style={{ filter: `drop-shadow(0 0 2px currentColor)` }}
+        />
+      </svg>
+      {/* percentage*/}
+      <span className="absolute text-[9px] font-black text-slate-700 tracking-tighter">
+        {Math.round(safeScore)}%
+      </span>
+    </div>
+  )
+}
 
 function App() {
-const [applications, setApplications] = useState([])
- const [session, setSession] = useState(null)
- const [profile, setProfile] = useState({ skills: '', experience: '' })
-  const [profileSaved, setProfileSaved] = useState(false)
-
- const [parseError, setParseError] = useState('')
-  const [form, setForm] = useState({
-    company: '',
-    role: '',
-    status: 'applied',
-    job_url: '',
-    notes: '',
-    match_score: null,
-    pros: [],
-    cons: []
-  })
-  const [editingId, setEditingId] = useState(null)
-
+  const [applications, setApplications] = useState([])
+  const [session, setSession] = useState(null)
+  const [profile, setProfile] = useState({ skills: '', experience: '' })
+  const [parseError, setParseError] = useState('')
+  const [isParsing, setIsParsing] = useState(false)
   const [jobText, setJobText] = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [form, setForm] = useState({
+    company: '', role: '', status: 'applied', job_url: '', notes: '',
+    match_score: null, pros: [], cons: []
+  })
 
+  // Auth & Data Loading
   useEffect(() => {
-    // check if user is already logged in on page load
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
-
-    // listen for login/logout
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
     return () => subscription.unsubscribe()
   }, [])
 
-useEffect(() => {
-  if (session) {
-    api.get('/applications').then(res => setApplications(res.data))
-    api.get('/profile').then(res => {
-      if (res.data) setProfile(res.data)
-    })
-  }
-}, [session])
-
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl border border-gray-200 p-10 max-w-sm w-full text-center shadow-sm">
-          <span className="font-mono text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">CD</span>
-          <h1 className="text-2xl font-semibold text-gray-900 mt-4 mb-2">CareerDrive</h1>
-          <p className="text-sm text-gray-500 mb-8">Track your job applications, powered by AI</p>
-          <button 
-            onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
-            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <img src="https://www.google.com/favicon.ico" className="w-4 h-4" />
-            Sign in with Google
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault()
-    if (!form.company || !form.role) return
-
-    if (editingId) {
-      api.patch(`/applications/${editingId}`, form).then(res => {
-        setApplications(applications.map(app => 
-          app.id === editingId ? res.data[0] : app
-        ))
-        setEditingId(null)
-        setForm({ company: '', role: '', status: 'applied', job_url: '', notes: '' })
-      })
-    } else {
-      api.post('/applications', form).then(res => {
-        setApplications([...applications, res.data[0]])
-        setForm({ company: '', role: '', status: 'applied', job_url: '', notes: '' })
-      })
+  useEffect(() => {
+    if (session) {
+      api.get('/applications').then(res => setApplications(res.data))
+      api.get('/profile').then(res => { if (res.data) setProfile(res.data) })
     }
-  }
+  }, [session])
 
-  function handleDelete(id) {
-    api.delete(`/applications/${id}`).then(() => {
-      setApplications(applications.filter(app => app.id !== id))
-    })
-  }
-
-  function handleEdit(app) {
-    setEditingId(app.id)
-    setForm({
-      company: app.company,
-      role: app.role,
-      status: app.status,
-      job_url: app.job_url || '',
-      notes: app.notes || ''
-    })
+  // 3. Logic Handle
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const handleDelete = (id) => api.delete(`/applications/${id}`).then(() => setApplications(applications.filter(app => app.id !== id)))
+  const handleEdit = (app) => {
+    setEditingId(app.id);
+    setForm({ ...app, job_url: app.job_url || '', notes: app.notes || '' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function handleParse() {
-    setParseError('')
+    if (!jobText) return;
+    setIsParsing(true);
+    setParseError('');
     try {
-      const res = await api.post('/parse-job', { text: jobText })
+      const res = await api.post('/parse-job', { text: jobText });
       setForm(prev => ({
         ...prev,
         company: res.data.company || '',
         role: res.data.role || '',
         notes: res.data.notes || '',
         match_score: res.data.match_score || null,
-        pros: res.data.pros || '',
-        cons: res.data.cons || '',
-
-      }))
+        pros: res.data.pros || [],
+        cons: res.data.cons || [],
+      }));
     } catch (err) {
-      setParseError('Failed to parse job description. Try again.')
+      setParseError('Failed to parse. Check API connection.');
+    } finally {
+      setIsParsing(false);
     }
   }
 
-  return (
-    <div className="min-h-screen p-8 max-w-6xl mx-auto">
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!form.company || !form.role) return;
+    const method = editingId ? 'patch' : 'post';
+    const url = editingId ? `/applications/${editingId}` : '/applications';
 
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">CD</span>
-            <h1 className="font-semibold text-gray-900">CareerDrive</h1>
+    api[method](url, form).then(res => {
+      if (editingId) {
+        setApplications(applications.map(app => app.id === editingId ? res.data[0] : app));
+      } else {
+        setApplications([...applications, res.data[0]]);
+      }
+      setEditingId(null);
+      setForm({ company: '', role: '', status: 'applied', job_url: '', notes: '', match_score: null, pros: [], cons: [] });
+      setJobText('');
+    })
+  }
+
+  // Conditional render for login (signed out, new users etc)
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center font-['DM_Sans']">
+        <div className="bg-white rounded-3xl border border-gray-200 p-10 max-w-sm w-full text-center shadow-xl">
+          <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold mx-auto mb-4">CD</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">CareerDrive</h1>
+          <p className="text-sm text-gray-500 mb-8 font-medium">Your AI-Powered Job Pipeline</p>
+          <button 
+            onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 rounded-2xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
+          >
+            <img src="https://www.google.com/favicon.ico" className="w-4 h-4" />
+            Sign in with Google
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 5. Main App
+return (
+  <div className="min-h-screen bg-[#F8FAFC] text-slate-900 selection:bg-indigo-100 font-['DM_Sans']">
+    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 group cursor-default">
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-200 transition-transform group-hover:scale-110">CD</div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-800">CareerDrive</h1>
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="hidden md:block text-right">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Candidate</p>
+            <p className="text-sm font-bold text-slate-700">{session.user.email.split('@')[0]}</p>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">{session.user.email}</span>
-            <button 
-              onClick={() => supabase.auth.signOut()}
-              className="text-sm px-3 py-1.5 rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              Sign out
+          <button onClick={() => supabase.auth.signOut()} className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all">Sign Out</button>
+        </div>
+      </div>
+    </nav>
+
+    <main className="max-w-7xl mx-auto p-6 lg:p-10">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+        
+        {/* LEFT COL */}
+        <div className="md:col-span-4 space-y-6">
+          
+          {/* Momentum + Filter */}
+          <section className="bg-indigo-600 rounded-[2rem] p-6 text-white shadow-xl shadow-indigo-100">
+            <p className="text-[10px] font-black uppercase opacity-60 tracking-widest mb-1">Application Momentum</p>
+            <h3 className="text-2xl font-bold italic">Keep Up The Momentum.</h3>
+            
+            <div className="mt-6 space-y-4">
+              <div>
+                <div className="flex justify-between text-[10px] font-bold mb-1 uppercase tracking-tighter">
+                  <span>Daily Goal</span>
+                  <span>{applications.filter(a => new Date(a.created_at).toDateString() === new Date().toDateString()).length} / 5</span>
+                </div>
+                <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-white h-full transition-all duration-1000" 
+                    style={{ width: `${Math.min((applications.length / 5) * 100, 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <input 
+                  type="text" 
+                  placeholder="Filter by company..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-xs placeholder:text-white/40 focus:bg-white/20 outline-none transition-all"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Smart Import/Parser */}
+          <section className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+            <h2 className="text-sm font-black mb-4 flex items-center gap-2 text-slate-800 uppercase tracking-widest">
+              <span className="text-indigo-500">✨</span> {editingId ? 'Edit Entry' : 'Smart Import'}
+            </h2>
+            <textarea
+              placeholder="Paste job description..."
+              value={jobText} onChange={e => setJobText(e.target.value)}
+              className="w-full h-32 p-4 text-sm bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500/10 outline-none resize-none"
+            />
+            <button onClick={handleParse} disabled={isParsing} className="w-full mt-3 py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 disabled:opacity-50 transition-all shadow-lg">
+              {isParsing ? 'RailVision Processing...' : 'Auto-Fill with AI'}
             </button>
+            {parseError && <p className="text-rose-500 text-[10px] mt-2 text-center font-bold">{parseError}</p>}
+          </section>
+
+          {/* Form Section (manual input and confirm) */}
+          <section className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <input name="company" placeholder="Company" value={form.company} onChange={handleChange} className="w-full p-3 bg-slate-50 rounded-xl text-xs border-none outline-none" />
+                <input name="role" placeholder="Role" value={form.role} onChange={handleChange} className="w-full p-3 bg-slate-50 rounded-xl text-xs border-none outline-none" />
+              </div>
+              <select name="status" value={form.status} onChange={handleChange} className="w-full p-3 bg-slate-50 rounded-xl text-xs border-none font-bold outline-none capitalize">
+                {['applied', 'interviewing', 'offered', 'rejected'].map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <button type="submit" className="w-full py-3.5 bg-indigo-600 text-white rounded-2xl font-black text-xs hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 uppercase tracking-widest">
+                {editingId ? 'Save Changes' : 'Confirm Application'}
+              </button>
+            </form>
+          </section>
+
+          {/* user/applicant profile */}
+          <section className="bg-slate-50 border border-slate-200 rounded-3xl p-5">
+            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Engineer Profile</h2>
+            <textarea
+              placeholder="Your skills (e.g. React, Python, AWS)..."
+              value={profile.skills} onChange={e => setProfile({ ...profile, skills: e.target.value })}
+              className="w-full p-3 text-xs bg-white border border-slate-200 rounded-xl mb-2 min-h-[80px] outline-none"
+            />
+            <button onClick={() => api.post('/profile', profile).then(() => setProfileSaved(true))} className="w-full py-2 bg-white text-indigo-600 border border-indigo-100 rounded-xl text-[10px] font-black hover:bg-indigo-50 transition-all uppercase">
+              Update Context
+            </button>
+          </section>
+        </div>
+
+        {/* RIGHT COL */}
+        <div className="md:col-span-8 space-y-6">
+          <section className="bg-slate-950 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden">
+            <Analytics applications={applications} />
+
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full"></div>
+          </section>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-4">
+              <h2 className="text-xl font-black text-slate-800 tracking-tight italic">Active Pipeline</h2>
+              <div className="flex gap-2">
+                {['all', 'interviewing', 'offered'].map(s => (
+                  <button 
+                    key={s}
+                    onClick={() => setFilterStatus(s)}
+                    className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${filterStatus === s ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="h-[550px] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
+              {applications
+                .filter(app => app.company.toLowerCase().includes(searchTerm.toLowerCase()))
+                .filter(app => filterStatus === 'all' || app.status === filterStatus)
+                .length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center bg-white rounded-[2.5rem] border-2 border-dashed border-slate-100 text-slate-400">
+                  <p className="font-bold tracking-tight">No matching applications found.</p>
+                </div>
+              ) : (
+                applications
+                  .filter(app => app.company.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .filter(app => filterStatus === 'all' || app.status === filterStatus)
+                  .map(app => (
+                    <ApplicationCard 
+                      key={app.id} 
+                      app={app} 
+                      onEdit={handleEdit} 
+                      onDelete={handleDelete} 
+                    />
+                  ))
+              )}
+            </div>
           </div>
+
+          {/* system oversight and LLM-Ops logging*/}
+          <AdminDashboard />
         </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-8 py-8">
-    
-<div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
-  <h2 className="font-semibold text-gray-900 mb-4">My Profile</h2>
-  <div className="grid grid-cols-2 gap-3">
-    <textarea
-      placeholder="Your skills (e.g. React, Python, FastAPI, PostgreSQL)"
-      value={profile.skills}
-      onChange={e => setProfile({ ...profile, skills: e.target.value })}
-      rows={3}
-      className="px-3 py-2 text-sm border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-    <textarea
-      placeholder="Your experience and projects (e.g. Frontend Development Internship, Built Public Transport dashboard with FastAPI and React)"
-      value={profile.experience}
-      onChange={e => setProfile({ ...profile, experience: e.target.value })}
-      rows={3}
-      className="px-3 py-2 text-sm border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-  </div>
-  <button
-    onClick={() => api.post('/profile', profile).then(() => setProfileSaved(true))}
-    className="mt-3 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-  >
-    Save Profile
-  </button>
-  {profileSaved && <span className="text-sm text-green-600 ml-3">Saved!</span>}
-</div>
-
-<div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
-  <h2 className="font-semibold text-gray-900 mb-4">
-    {editingId ? 'Edit Application' : 'Add Application'}
-  </h2>
-
-  <div className="mb-4">
-    <textarea
-      placeholder="Paste job description here to auto-fill..."
-      value={jobText}
-      onChange={e => setJobText(e.target.value)}
-      rows={3}
-      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400"
-    />
-    <button
-      type="button"
-      onClick={handleParse}
-      className="mt-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-    >
-      Parse with AI
-    </button>
-    {parseError && <p className="text-red-500 text-sm mt-1">{parseError}</p>}
-  </div>
-
-  <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3">
-    <input
-      name="company"
-      placeholder="Company"
-      value={form.company}
-      onChange={handleChange}
-      className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-    <input
-      name="role"
-      placeholder="Role"
-      value={form.role}
-      onChange={handleChange}
-      className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-    <select
-      name="status"
-      value={form.status}
-      onChange={handleChange}
-      className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-    >
-      <option value="applied">Applied</option>
-      <option value="interviewing">Interviewing</option>
-      <option value="offered">Offered</option>
-      <option value="rejected">Rejected</option>
-    </select>
-    <input
-      name="job_url"
-      placeholder="Job URL"
-      value={form.job_url}
-      onChange={handleChange}
-      className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-    <input
-      name="notes"
-      placeholder="Notes"
-      value={form.notes}
-      onChange={handleChange}
-      className="col-span-2 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-    <div className="col-span-2 flex gap-2">
-      <button
-        type="submit"
-        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        {editingId ? 'Update' : 'Add Application'}
-      </button>
-      {editingId && (
-        <button
-          type="button"
-          onClick={() => { setEditingId(null); setForm({ company: '', role: '', status: 'applied', job_url: '', notes: '' }) }}
-          className="px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          Cancel
-        </button>
-      )}
-    </div>
-  </form>
-</div>
-     <Analytics applications={applications} />
-{applications.map(app => (
-  <div key={app.id} className="bg-white rounded-xl border border-gray-200 p-5 mb-3 flex gap-5">
-    
-    {/* Score column */}
-    {app.match_score !== null && (
-      <div className="flex flex-col items-center justify-center min-w-[56px]">
-        <span className={`text-3xl font-bold font-mono ${
-          app.match_score >= 7 ? 'text-green-500' :
-          app.match_score >= 4 ? 'text-yellow-500' :
-          'text-red-400'
-        }`}>
-          {app.match_score}
-        </span>
-        <span className="text-xs text-gray-400">/10</span>
       </div>
-    )}
-
-    {/* Main content */}
-    <div className="flex-1 min-w-0">
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <h3 className="font-semibold text-gray-900">{app.company}</h3>
-          <p className="text-sm text-gray-500">{app.role}</p>
-        </div>
-        <span className={`text-xs px-2 py-1 rounded-full shrink-0 ml-2 ${
-          app.status === 'offered' ? 'bg-green-50 text-green-700' :
-          app.status === 'interviewing' ? 'bg-yellow-50 text-yellow-700' :
-          app.status === 'rejected' ? 'bg-red-50 text-red-700' :
-          'bg-blue-50 text-blue-700'
-        }`}>
-          {app.status}
-        </span>
-      </div>
-
-      {/* Pros and cons */}
-      {(app.pros?.length > 0 || app.cons?.length > 0) && (
-        <div className="grid grid-cols-2 gap-3 mt-2">
-          {app.pros?.length > 0 && (
-            <div>
-              {app.pros.map(pro => (
-                <p key={pro} className="text-xs text-green-700 flex gap-1">
-                  <span>+</span>{pro}
-                </p>
-              ))}
-            </div>
-          )}
-          {app.cons?.length > 0 && (
-            <div>
-              {app.cons.map(con => (
-                <p key={con} className="text-xs text-red-500 flex gap-1">
-                  <span>−</span>{con}
-                </p>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="flex gap-2 mt-3">
-        <button onClick={() => handleEdit(app)} className="text-xs text-gray-500 hover:text-gray-700">Edit</button>
-        <button onClick={() => handleDelete(app.id)} className="text-xs text-red-400 hover:text-red-600">Delete</button>
-      </div>
-    </div>
+    </main>
   </div>
-))}
-    
-      <AdminDashboard />
-      </main>
-    </div>
-  
-  )
+)
 }
 
-export default App
+export default App;
