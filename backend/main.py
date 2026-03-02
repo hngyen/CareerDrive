@@ -38,6 +38,11 @@ class Application(BaseModel):
     pros: Optional[List[str]] = None
     cons: Optional[List[str]] = None
 
+@app.get("/")
+@app.head("/")
+def read_root():
+    return {"status": "online", "message": "CareerDrive Backend is awake"}
+
 @app.get("/applications")
 def get_applications(user=Depends(get_current_user)):
     response = supabase.table("applications").select("*").eq("user_id", user.id).execute()
