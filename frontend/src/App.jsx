@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react'
 import api from './api'
 import './App.css'
 import supabase from './supabase'
+import Analytics from './components/Analytics'
+import AdminDashboard from './components/AdminDashboard'
 
 function App() {
 const [applications, setApplications] = useState([])
  const [session, setSession] = useState(null)
+
+ const [parseError, setParseError] = useState('')
   const [form, setForm] = useState({
     company: '',
     role: '',
@@ -90,13 +94,18 @@ const [applications, setApplications] = useState([])
   }
 
   async function handleParse() {
-    const res = await api.post('/parse-job', { text: jobText })
-    setForm(prev => ({
-      ...prev,
-      company: res.data.company || '',
-      role: res.data.role || '',
-      notes: res.data.notes || ''
-    }))
+    setParseError('')
+    try {
+      const res = await api.post('/parse-job', { text: jobText })
+      setForm(prev => ({
+        ...prev,
+        company: res.data.company || '',
+        role: res.data.role || '',
+        notes: res.data.notes || ''
+      }))
+    } catch (err) {
+      setParseError('Failed to parse job description. Please try again.')
+    }
   }
 
     
@@ -106,6 +115,9 @@ const [applications, setApplications] = useState([])
       <p>Welcome, {session.user.email}</p>
       <button onClick={() => supabase.auth.signOut()}>Sign out</button>
 
+      <AdminDashboard />
+
+
       <textarea 
         placeholder="Paste job description here..."
         value={jobText}
@@ -113,6 +125,7 @@ const [applications, setApplications] = useState([])
         rows={4}
       />
       <button type="button" onClick={handleParse}>Parse Job</button>
+      {parseError && <p style={{color: 'red'}}>{parseError}</p>}
 
       <form onSubmit={handleSubmit}>
         <input name="company" placeholder="Company" value={form.company} onChange={handleChange} />
@@ -127,7 +140,7 @@ const [applications, setApplications] = useState([])
         <input name="notes" placeholder="Notes" value={form.notes} onChange={handleChange} />
         <button type="submit">{editingId ? 'Update' : 'Add Application'}</button>
       </form>
-
+     <Analytics applications={applications} />
       {applications.map(app => (
         <div key={app.id}>
           <h3>{app.company} — {app.role}</h3>
@@ -136,6 +149,8 @@ const [applications, setApplications] = useState([])
           <button onClick={() => handleDelete(app.id)}>Delete</button>
         </div>
       ))}
+
+
     </div>
   )
 }
