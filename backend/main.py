@@ -148,5 +148,5 @@ def parse_job(payload: dict, user=Depends(get_current_user)):
 
 @app.get("/parse-logs")
 def get_parse_logs(user=Depends(get_current_user)):
-    response = supabase.table("parse_logs").select("*").eq("user_id", user.id).order("created_at", desc=True).execute()
+    response = supabase.table("parse_logs").select("created_at, total_tokens, latency_seconds, estimated_cost_usd, success").order("created_at", desc=True).execute()
     return response.data
