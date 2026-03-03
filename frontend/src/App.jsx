@@ -104,7 +104,7 @@ function App() {
         cons: res.data.cons || [],
       }));
     } catch (err) {
-      setParseError('Failed to parse. Check API connection.');
+      setParseError('AI Quota exceeded. Try again tomorrow!');
     } finally {
       setIsParsing(false);
     }
@@ -238,9 +238,9 @@ return (
 
           {/* user/applicant profile */}
           <section className="bg-slate-50 border border-slate-200 rounded-3xl p-5">
-            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Engineer Profile</h2>
+            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Applicant Profile</h2>
             <textarea
-              placeholder="Your skills (e.g. React, Python, AWS)..."
+              placeholder="Your skills, projects, experience, education ..."
               value={profile.skills} onChange={e => setProfile({ ...profile, skills: e.target.value })}
               className="w-full p-3 text-xs bg-white border border-slate-200 rounded-xl mb-2 min-h-[80px] outline-none"
             />

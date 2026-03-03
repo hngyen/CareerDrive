@@ -31,7 +31,7 @@ const AdminDashboard = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="w-2 h-6 bg-indigo-600 rounded-full"></div>
-            <h3 className="text-lg font-black text-slate-800 tracking-tight">System Oversight</h3>
+            <h3 className="text-lg font-black text-slate-800 tracking-tight">System Overview</h3>
           </div>
           <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
