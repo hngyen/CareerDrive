@@ -240,7 +240,7 @@ return (
           <section className="bg-slate-50 border border-slate-200 rounded-3xl p-5">
             <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Applicant Profile</h2>
             <textarea
-              placeholder="Your skills, projects, experience, education ..."
+              placeholder="Your skills (e.g. React, Python), experience..."
               value={profile.skills} onChange={e => setProfile({ ...profile, skills: e.target.value })}
               className="w-full p-3 text-xs bg-white border border-slate-200 rounded-xl mb-2 min-h-[80px] outline-none"
             />
