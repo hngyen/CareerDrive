@@ -84,6 +84,7 @@ google_client = google_genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 def parse_job(payload: dict, user=Depends(get_current_user)):
     text = payload.get("text", "")
     
+    response = None
     start_time = time.time()
     success = False
     
