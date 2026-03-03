@@ -124,7 +124,12 @@ def parse_job(payload: dict, user=Depends(get_current_user)):
         )
 
         import json
-        result = json.loads(response.text)
+        raw = response.text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        result = json.loads(raw.strip())
         success = True
         
     finally:

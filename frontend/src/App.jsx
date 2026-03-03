@@ -215,7 +215,7 @@ return (
               className="w-full h-32 p-4 text-sm bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500/10 outline-none resize-none"
             />
             <button onClick={handleParse} disabled={isParsing} className="w-full mt-3 py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 disabled:opacity-50 transition-all shadow-lg">
-              {isParsing ? 'RailVision Processing...' : 'Auto-Fill with AI'}
+              {isParsing ? 'CareerDrive Processing...' : 'Auto-Fill with AI'}
             </button>
             {parseError && <p className="text-rose-500 text-[10px] mt-2 text-center font-bold">{parseError}</p>}
           </section>
