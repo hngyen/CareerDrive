@@ -29,14 +29,14 @@ const MatchRing = ({ score }) => {
   );
 };
 
-export default function ApplicationCard({ app, onEdit, onDelete, onToggleFavorite }) {
+export default function ApplicationCard({ app, onEdit, onDelete, onToggleFavorite, isDemo }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div 
       className={`group bg-white rounded-[2rem] border transition-all duration-300 overflow-visible ${
         isExpanded ? 'border-indigo-400 shadow-xl ring-4 ring-indigo-50 ring-offset-2' : 'border-slate-200 hover:border-indigo-300'
-      } ${app.isFavorited ? 'border-amber-300 ring-1 ring-amber-100' : ''}`}
+      }`}
     >
       {/* header (always visible) */}
       <div 
@@ -56,15 +56,14 @@ export default function ApplicationCard({ app, onEdit, onDelete, onToggleFavorit
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onToggleFavorite && onToggleFavorite(app.id);
+                  if (onToggleFavorite) onToggleFavorite(app.id);
                 }}
-                className={`text-lg transition-all ${app.isFavorited ? 'text-amber-400' : 'text-slate-300 hover:text-amber-300'}`}
-                title={app.isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                className="text-xl transition-all hover:scale-125"
               >
-                ★
+                {app.isFavorited ? '★' : '☆'}
               </button>
               <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border ${
                 app.status === 'offered' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
@@ -85,8 +84,8 @@ export default function ApplicationCard({ app, onEdit, onDelete, onToggleFavorit
 
       {/* expandable insights (only on click) */}
       {isExpanded && (
-        <div className="px-6 pb-6 pt-2 border-t border-slate-50">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/50 p-4 rounded-2xl">
+        <div className="px-6 pb-6 pt-2 border-t border-slate-50 relative">
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/50 p-4 rounded-2xl ${isDemo ? 'opacity-40 pointer-events-none' : ''}`}>
             <div className="space-y-3">
               <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
                 <span className="w-1 h-1 bg-emerald-600 rounded-full"></span> AI Strength Analysis
@@ -123,6 +122,21 @@ export default function ApplicationCard({ app, onEdit, onDelete, onToggleFavorit
                Remove
             </button>
           </div>
+          {isDemo && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-2xl">
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 max-w-sm text-center border border-indigo-200 shadow-xl">
+                <div className="text-2xl mb-2">✨</div>
+                <h4 className="font-black text-slate-900 text-sm mb-2">Full AI Insights Unlocked</h4>
+                <p className="text-xs text-slate-500 mb-4">Sign up and use Smart Import for real pros & cons comparing your profile against the role.</p>
+                <button
+                  onClick={() => window.location.href = '/'}
+                  className="w-full px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all"
+                >
+                  Create Account
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

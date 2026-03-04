@@ -442,6 +442,7 @@ function App() {
                         onEdit={handleEdit} 
                         onDelete={handleDelete}
                         onToggleFavorite={handleToggleFavorite}
+                        isDemo={isDemo}
                       />
                     ))
                   }
