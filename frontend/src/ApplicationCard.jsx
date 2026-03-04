@@ -29,14 +29,14 @@ const MatchRing = ({ score }) => {
   );
 };
 
-export default function ApplicationCard({ app, onEdit, onDelete }) {
+export default function ApplicationCard({ app, onEdit, onDelete, onToggleFavorite }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div 
       className={`group bg-white rounded-[2rem] border transition-all duration-300 overflow-visible ${
         isExpanded ? 'border-indigo-400 shadow-xl ring-4 ring-indigo-50 ring-offset-2' : 'border-slate-200 hover:border-indigo-300'
-      }`}
+      } ${app.isFavorited ? 'border-amber-300 ring-1 ring-amber-100' : ''}`}
     >
       {/* header (always visible) */}
       <div 
@@ -56,6 +56,16 @@ export default function ApplicationCard({ app, onEdit, onDelete }) {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFavorite && onToggleFavorite(app.id);
+                }}
+                className={`text-lg transition-all ${app.isFavorited ? 'text-amber-400' : 'text-slate-300 hover:text-amber-300'}`}
+                title={app.isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+              >
+                ★
+              </button>
               <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border ${
                 app.status === 'offered' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                 app.status === 'interviewing' ? 'bg-amber-50 text-amber-600 border-amber-100' :

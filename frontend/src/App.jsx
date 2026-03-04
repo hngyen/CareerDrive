@@ -49,17 +49,21 @@ const styles = `
 
 // dummy data for demo mode
 const DEMO_APPLICATIONS = [
-  { id: 1, company: 'Google', role: 'Software Engineer', status: 'interviewing', job_url: '', notes: 'Pending second round', match_score: 85, pros: ['Strong system design', 'Good DSA skills'], cons: ['Limited ML experience'], created_at: '2026-03-02T10:30:00.000Z' },
-  { id: 2, company: 'Microsoft', role: 'Frontend Developer', status: 'offered', job_url: '', notes: 'Offer extended', match_score: 92, pros: ['React expert', 'UI/UX knowledge'], cons: [], created_at: '2025-02-27T14:45:00.000Z' },
-  { id: 3, company: 'Amazon', role: 'Backend Engineer', status: 'applied', job_url: '', notes: 'Application submitted', match_score: 72, pros: ['Cloud experience'], cons: ['Limited AWS hands-on'], created_at: '2026-03-03T09:15:00.000Z' },
-  { id: 4, company: 'Meta', role: 'Full Stack Engineer', status: 'rejected', job_url: '', notes: 'Not selected', match_score: 58, pros: ['Problem solving'], cons: ['Weak TypeScript', 'Limited distributed systems'], created_at: '2025-02-25T11:20:00.000Z' },
-  { id: 5, company: 'Apple', role: 'iOS Developer', status: 'interviewing', job_url: '', notes: 'Waiting for final round', match_score: 78, pros: ['Swift proficient', 'App design'], cons: ['Limited SwiftUI'], created_at: '2026-03-01T16:00:00.000Z' },
-  { id: 6, company: 'Tesla', role: 'ML Engineer', status: 'applied', job_url: '', notes: 'Under review', match_score: 68, pros: ['Python strong', 'ML theory'], cons: ['Limited production ML', 'No CV experience'], created_at: '2026-03-04T08:30:00.000Z' },
-  { id: 7, company: 'Atlassian', role: 'Product Engineer', status: 'interviewing', job_url: '', notes: 'Technical screen passed', match_score: 88, pros: ['Collaboration tools exp', 'React/Node focus'], cons: ['Jira API unfamiliarity'], created_at: '2026-03-01T09:00:00.000Z' },
-  { id: 8, company: 'Canva', role: 'Graphic Engineer', status: 'applied', job_url: '', notes: 'Applied via referral', match_score: 81, pros: ['WebGL knowledge', 'Canvas API'], cons: ['Low experience in Rust'], created_at: '2026-03-03T11:20:00.000Z' },
-  { id: 9, company: 'Netflix', role: 'Senior Platform Engineer', status: 'rejected', job_at: '', notes: 'Resume screen failed', match_score: 64, pros: ['Microservices expert'], cons: ['Needs more high-scale ops'], created_at: '2026-02-20T15:10:00.000Z' },
-  { id: 10, company: 'Airbnb', role: 'Full Stack Developer', status: 'offered', job_url: '', notes: 'Negotiating salary', match_score: 95, pros: ['GraphQL master', 'Design systems'], cons: [], created_at: '2026-02-28T13:00:00.000Z' },
-  { id: 11, company: 'Uber', role: 'Infrastructure Engineer', status: 'interviewing', job_url: '', notes: 'System design next week', match_score: 77, pros: ['Docker/K8s skills'], cons: ['Limited Go experience'], created_at: '2026-03-04T12:00:00.000Z' }
+  { id: 1, company: 'Google', role: 'Software Engineer', status: 'interviewing', job_url: '', notes: 'Pending second round', match_score: 85, pros: ['Strong system design', 'Good DSA skills'], cons: ['Limited ML experience'], created_at: '2026-03-04T12:30:00.000Z', isFavorited: true },
+  { id: 2, company: 'Stripe', role: 'Backend Engineer', status: 'interviewing', job_url: '', notes: 'Final round scheduled', match_score: 89, pros: ['API design strong', 'Scalability knowledge'], cons: [], created_at: '2026-03-04T11:45:00.000Z', isFavorited: true },
+  { id: 3, company: 'Figma', role: 'Frontend Developer', status: 'applied', job_url: '', notes: 'Portfolio reviewed', match_score: 86, pros: ['Design systems', 'React advanced'], cons: ['Limited design background'], created_at: '2026-03-04T11:30:00.000Z', isFavorited: false },
+  { id: 4, company: 'Oracle', role: 'Database Administrator', status: 'applied', job_url: '', notes: 'Screening in progress', match_score: 75, pros: ['Oracle certified', 'SQL expertise'], cons: ['Limited NoSQL'], created_at: '2026-03-04T10:15:00.000Z', isFavorited: false },
+  { id: 5, company: 'Tesla', role: 'ML Engineer', status: 'applied', job_url: '', notes: 'Under review', match_score: 68, pros: ['Python strong', 'ML theory'], cons: ['Limited production ML', 'No CV experience'], created_at: '2026-03-04T08:30:00.000Z', isFavorited: false },
+  { id: 6, company: 'Amazon', role: 'Backend Engineer', status: 'applied', job_url: '', notes: 'Application submitted', match_score: 72, pros: ['Cloud experience'], cons: ['Limited AWS hands-on'], created_at: '2026-03-03T09:15:00.000Z', isFavorited: false },
+  { id: 7, company: 'Canva', role: 'Graphic Engineer', status: 'applied', job_url: '', notes: 'Applied via referral', match_score: 81, pros: ['WebGL knowledge', 'Canvas API'], cons: ['Low experience in Rust'], created_at: '2026-03-03T11:20:00.000Z', isFavorited: false },
+  { id: 8, company: 'Atlassian', role: 'Product Engineer', status: 'interviewing', job_url: '', notes: 'Technical screen passed', match_score: 88, pros: ['Collaboration tools exp', 'React/Node focus'], cons: ['Jira API unfamiliarity'], created_at: '2026-03-01T09:00:00.000Z', isFavorited: false },
+  { id: 9, company: 'Apple', role: 'iOS Developer', status: 'interviewing', job_url: '', notes: 'Waiting for final round', match_score: 78, pros: ['Swift proficient', 'App design'], cons: ['Limited SwiftUI'], created_at: '2026-03-01T16:00:00.000Z', isFavorited: false },
+  { id: 10, company: 'Airbnb', role: 'Full Stack Developer', status: 'offered', job_url: '', notes: 'Negotiating salary', match_score: 95, pros: ['GraphQL master', 'Design systems'], cons: [], created_at: '2026-02-28T13:00:00.000Z', isFavorited: true },
+  { id: 11, company: 'Microsoft', role: 'Frontend Developer', status: 'offered', job_url: '', notes: 'Offer extended', match_score: 92, pros: ['React expert', 'UI/UX knowledge'], cons: [], created_at: '2025-02-27T14:45:00.000Z', isFavorited: true },
+  { id: 12, company: 'Netflix', role: 'Senior Platform Engineer', status: 'rejected', job_url: '', notes: 'Resume screen failed', match_score: 64, pros: ['Microservices expert'], cons: ['Needs more high-scale ops'], created_at: '2026-02-20T15:10:00.000Z', isFavorited: false },
+  { id: 13, company: 'IBM', role: 'Cloud Engineer', status: 'rejected', job_url: '', notes: 'Interview performance below expectations', match_score: 52, pros: ['Cloud certifications'], cons: ['Limited hands-on experience'], created_at: '2026-02-18T14:20:00.000Z', isFavorited: false },
+  { id: 14, company: 'Meta', role: 'Full Stack Engineer', status: 'rejected', job_url: '', notes: 'Not selected', match_score: 58, pros: ['Problem solving'], cons: ['Weak TypeScript', 'Limited distributed systems'], created_at: '2025-02-25T11:20:00.000Z', isFavorited: false },
+  { id: 15, company: 'Uber', role: 'Infrastructure Engineer', status: 'interviewing', job_url: '', notes: 'System design next week', match_score: 77, pros: ['Docker/K8s skills'], cons: ['Limited Go experience'], created_at: '2026-02-20T12:00:00.000Z', isFavorited: false }
 ]
 
 const DEMO_PROFILE = { skills: 'Python, JavaScript, React, Node.js, SQL, MongoDB, Docker, AWS, Git. Strong in algorithms and system design. Background in full-stack web development with 3+ years experience.' };
@@ -135,6 +139,7 @@ function App() {
   const [editingId, setEditingId] = useState(null)
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
   const [dailyGoal, setDailyGoal] = useState(5);
   const [highlightedStat, setHighlightedStat] = useState(null);
   const [form, setForm] = useState({
@@ -162,7 +167,7 @@ function App() {
       // for demo mode, automatically load log mock updates periodically
       const interval = setInterval(() => {
 
-        // Simulate new log arrivals
+        // simulate new log arrivals
         setApplications(prev => [...prev]);
       }, 5000);
       return () => clearInterval(interval);
@@ -180,6 +185,13 @@ function App() {
     setEditingId(app.id);
     setForm({ ...app, job_url: app.job_url || '', notes: app.notes || '' });
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const handleToggleFavorite = (id) => {
+    setApplications(applications.map(app => app.id === id ? { ...app, isFavorited: !app.isFavorited } : app))
+    if (session) {
+      api.patch(`/applications/${id}`, { isFavorited: !applications.find(a => a.id === id).isFavorited })
+    }
   }
 
   async function handleParse() {
@@ -382,43 +394,58 @@ function App() {
           <div className="space-y-4">
             <div className="flex items-center justify-between px-4">
               <h2 className="text-xl font-black text-slate-800 tracking-tight italic">Active Pipeline</h2>
-              <div className="flex gap-2">
-                {['all', 'interviewing', 'offered'].map(s => (
-                  <button 
-                    key={s}
-                    onClick={() => setFilterStatus(s)}
-                    className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${filterStatus === s ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}`}
-                  >
-                    {s}
-                  </button>
-                ))}
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2">
+                  {['all', 'interviewing', 'offered', 'rejected'].map(s => (
+                    <button 
+                      key={s}
+                      onClick={() => setFilterStatus(s)}
+                      className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${filterStatus === s ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  {[['newest', '↓ Newest'], ['favorite', '★ Favorites'], ['score', '✓ Match Score']].map(([key, label]) => (
+                    <button 
+                      key={key}
+                      onClick={() => setSortBy(key)}
+                      className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${sortBy === key ? 'bg-indigo-500 text-white' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {applications
-              .filter(app => app.company.toLowerCase().includes(searchTerm.toLowerCase()))
-              .filter(app => filterStatus === 'all' || app.status === filterStatus)
-              .length === 0 ? (
-              <div className="flex flex-col items-center justify-center min-h-[300px] bg-white rounded-[2.5rem] border-2 border-dashed border-slate-100 text-slate-400 p-8">
-                <p className="text-lg font-black tracking-tight mb-2">No Applications Yet</p>
-                <p className="text-sm font-medium">Start applying! Great things never come to those who wait.</p>
-              </div>
-            ) : (
-              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-4">
-                {applications
-                  .filter(app => app.company.toLowerCase().includes(searchTerm.toLowerCase()))
-                  .filter(app => filterStatus === 'all' || app.status === filterStatus)
-                  .map(app => (
-                    <ApplicationCard 
-                      key={app.id} 
-                      app={app} 
-                      onEdit={handleEdit} 
-                      onDelete={handleDelete} 
-                    />
-                  ))
-                }
-              </div>
-            )}
+            <div className="max-h-[600px] overflow-y-auto space-y-3">
+              {applications
+                    .filter(app => filterStatus === 'all' || app.status === filterStatus)
+                    .sort((a, b) => {
+                      if (sortBy === 'newest') {
+                        if (a.isFavorited !== b.isFavorited) return b.isFavorited ? 1 : -1;
+                        return new Date(b.created_at) - new Date(a.created_at);
+                      } else if (sortBy === 'favorite') {
+                        if (a.isFavorited !== b.isFavorited) return b.isFavorited ? 1 : -1;
+                        return (b.match_score || 0) - (a.match_score || 0);
+                      } else if (sortBy === 'score') {
+                        return (b.match_score || 0) - (a.match_score || 0);
+                      }
+                      return 0;
+                    })
+                    .map(app => (
+                      <ApplicationCard 
+                        key={app.id} 
+                        app={app} 
+                        onEdit={handleEdit} 
+                        onDelete={handleDelete}
+                        onToggleFavorite={handleToggleFavorite}
+                      />
+                    ))
+                  }
+            </div>
           </div>
 
           {/* system oversight and LLM-Ops logging*/}
