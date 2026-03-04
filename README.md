@@ -29,8 +29,6 @@ CareerDrive is a full-stack job application tracker built for active job seekers
 
 ## Screenshots
 
-## Screenshots
-
 ### Dashboard Overview
 ![Dashboard](./docs/screenshots/main_dashboard_cd.png)
 
