@@ -1,0 +1,32 @@
+[33m6f978da[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33m1404f7d[m HEAD@{1}: commit: Added filtering and functions to pin/favourite applications to the top of list for ux
+[33m6f978da[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{2}: commit: Added demo mode to display page without user auth, contain ai tools to authenticated users
+[33m974d226[m HEAD@{3}: commit: minor UI style changes
+[33ma3f77a7[m HEAD@{4}: commit: UI style changes
+[33mffef73f[m HEAD@{5}: commit: Debugging errors with parsing between different accounts
+[33m7151122[m HEAD@{6}: commit: Debugging errors with parsing between different accounts
+[33m0865e32[m HEAD@{7}: commit: Set llm-op logs to show global stats, no private details leave backend
+[33m61eb471[m HEAD@{8}: commit: Handled exception for gemini rate limits
+[33mf8c5c90[m HEAD@{9}: commit: deployment cors issue fix
+[33m6a21d5e[m HEAD@{10}: commit: Fixed base url for axios, previously local
+[33me657ad5[m HEAD@{11}: commit: Updated dependencies in requirements
+[33mfc65ca5[m HEAD@{12}: commit: moved requirements to backend and added HEAD request handler
+[33ma85cd8c[m HEAD@{13}: commit: Requirements for backend deploy
+[33m126e508[m HEAD@{14}: commit: Fixed CORS issue
+[33mdf5d3ca[m HEAD@{15}: commit: Fixed depenency package issue that was breaking vercel deploy
+[33mb3a71bd[m HEAD@{16}: reset: moving to b3a71bd
+[33m1144a18[m HEAD@{17}: reset: moving to 1144a18
+[33m1144a18[m HEAD@{18}: commit: Downgrade to Vite 6 for stability
+[33mb3a71bd[m HEAD@{19}: commit: Addressing vite config affecting vercel deploy
+[33m829c813[m HEAD@{20}: commit: Fixing vercel deploy
+[33mffca751[m HEAD@{21}: commit: Updated the vite config files to handle supabase
+[33ma41333c[m HEAD@{22}: commit: Fresh install of node modules
+[33m05a71c0[m HEAD@{23}: commit: Cleaned repo
+[33ma082d84[m HEAD@{24}: commit: Updated package.json with correct dependencies
+[33mdc096cf[m HEAD@{25}: commit: Polished UI/UX with LLM assistance, adding filters, formatting and auto refresh for LLM-ops metrics
+[33m4bb75d2[m HEAD@{26}: commit: Improved prompt for AI parser, added JD evaluation against the user input skills and profile
+[33mf4b0e06[m HEAD@{27}: commit: Fixed AI parser rate limits handling, added funnel chart for intuitive display of applications
+[33m3c585f4[m HEAD@{28}: commit: Added AI parser to autofill fields from job description
+[33m57441e2[m HEAD@{29}: commit: Ensured users can only see their own applications
+[33mba15828[m HEAD@{30}: commit: Added basic CRUD operations for front and back end
+[33mc75b088[m HEAD@{31}: clone: from https://github.com/hngyen/CareerDrive.git

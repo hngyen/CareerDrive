@@ -10,15 +10,15 @@ AI-powered job application tracker — paste a job description, get instant role
 
 ## What it does
 
-CareerDrive is a full-stack job application tracker built for active job seekers. Paste a job description and Gemini AI parses it instantly — extracting the company, role, and evaluating your fit against your saved skills and experience profile. Each application gets a match score out of 10, a breakdown of strengths and gaps, and is stored with full CRUD support. A funnel dashboard tracks your application pipeline, and every AI inference is logged with token count, latency, and estimated cost.
+CareerDrive is a full-stack job application tracker built for active job seekers, tailored for the tech industry. Paste a job description and Gemini AI parses it instantly — extracting the company and role whilst evaluating your fit against your saved skills and experience profile. Each application receives a match percentage, a breakdown of strengths and gaps and is stored with full CRUD support. A funnel dashboard tracks your application pipeline and every AI inference is logged with token count, latency, and estimated cost.
 
 ---
 
 ## Features
 
 - **AI job parser** — paste a job description, auto-fills company, role, and notes via Gemini API
-- **Role-fit scoring** — match score (0–10) with pros and cons evaluated against your saved profile
-- **Application tracking** — create, update, and delete applications with status tracking (Applied, Interviewing, Offered, Rejected)
+- **Role-fit scoring** — match percentage with pros and cons evaluated against your saved profile
+- **Application tracking** — create, update, delete and filter applications with status tracking (Applied, Interviewing, Offered, Rejected)
 - **Application funnel** — visual progress bar showing pipeline conversion across statuses
 - **LLM ops dashboard** — every inference logged with token usage, API latency, and estimated cost in USD
 - **Google OAuth** — one-click sign in via Supabase Auth
@@ -31,7 +31,7 @@ CareerDrive is a full-stack job application tracker built for active job seekers
 
 | Dashboard | Match Analysis | LLM Ops |
 |-----------|---------------|---------|
-| ![Dashboard](screenshots/dashboard.png) | ![Match](screenshots/match.png) | ![LLM Ops](screenshots/llmops.png) |
+| ![Dashboard](./docs/screenshots/dashboard.png) | ![Match](./docs/screenshots/match.png) | ![LLM Ops](./docs/screenshots/llmops.png) |
 
 ---
 
@@ -70,19 +70,19 @@ PostgreSQL (Supabase)   Google Gemini API
 ## Key Engineering Decisions
 
 **RLS enforced at both the API and database layer**
-JWT tokens are verified in FastAPI before any query runs — unauthenticated requests are rejected with a 401 before touching the database. Row-level security policies in Supabase then enforce that authenticated users can only read and write their own rows. This double-layer means even a bug in application logic can't accidentally leak another user's data.
+JWT tokens are verified in FastAPI before any query runs. Unauthenticated requests are rejected with a 401 before touching the database. Row-level security policies in Supabase enforced so that authenticated users can only read and write their own rows. This double-layer means even a bug in application logic can't accidentally leak another user's data.
 
 **LLM cost tracking per request**
-Every call to the Gemini API logs prompt tokens, output tokens, latency, and estimated cost in USD to a `parse_logs` table. This was a deliberate product decision — in a production system, unmonitored LLM usage is a real cost risk. Logging per-request spend makes usage patterns visible and provides the data needed to optimise prompts or swap models if costs grow.
+Every call to the Gemini API logs prompt tokens, output tokens, latency, and estimated cost in USD to a `parse_logs` table; in a production system, unmonitored LLM usage can be a significant cost risk. Logging per-request spend makes usage patterns visible and provides the data needed to optimise prompts or swap models if costs grow.
 
 **Profile-aware prompting over generic parsing**
-Rather than just extracting job details, the parser includes the user's saved skills and experience in the prompt. This turns a simple extraction task into a personalised fit evaluation. The AI returns a match score and specific gaps — making the output actionable rather than just a reformatted job description.
+Rather than just extracting job details, the parser includes the user's saved skills and experience in the prompt for a personalised fit evaluation. The AI returns a match percentage and specific gaps, making the output actionable rather than just a reformatted job description.
 
 **Temperature set to 0 for consistency**
 Match scores and analysis are more useful when they're deterministic. Setting `temperature: 0` on the Gemini API call reduces variance between runs on the same input, making scores more reliable for comparing applications against each other.
 
 **Supabase Auth over custom JWT implementation**
-Rolling a custom auth system (hashing passwords, issuing JWTs, handling refresh tokens) is error-prone and typically a week of work. Supabase Auth handles all of this and ships Google OAuth out of the box — delivering a more polished login experience in a fraction of the time, with Google's security infrastructure behind it.
+Rolling a custom auth system (hashing passwords, issuing JWTs, handling refresh tokens) is error-prone and time-consuming. Supabase Auth handles and ships Google OAuth out of the box, delivering a more polished login experience in a fraction of the time, backed by Google's security infrastructure.
 
 **Service role key in backend, anon key in frontend**
 The Supabase service role key bypasses RLS entirely and is only used server-side in FastAPI, where token verification already happens. The anon key is used in the frontend where it has no special privileges. This separation means the privileged key is never exposed to the browser.
