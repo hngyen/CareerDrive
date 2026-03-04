@@ -4,7 +4,7 @@ AI-powered job application tracker — paste a job description, get instant role
 
 🔗 [Live Demo](https://careerdrive.vercel.app) | 📡 [API Docs](https://careerdrive.onrender.com/docs)
 
-![CareerDrive Dashboard](screenshots/dashboard_cd.png)
+![CareerDrive Dashboard](./docs/screenshots/dashboard_cd.png)
 
 ---
 
@@ -29,9 +29,19 @@ CareerDrive is a full-stack job application tracker built for active job seekers
 
 ## Screenshots
 
-| Dashboard | Match Analysis | LLM Ops |
-|-----------|---------------|---------|
-| ![Dashboard](./docs/screenshots/dashboard_cd.png) | ![Match](./docs/screenshots/match_cd.png) | ![LLM Ops](./docs/screenshots/llmops_cd.png) |
+## Screenshots
+
+### Dashboard Overview
+<!-- (FULL DASHBOARD SCREENSHOT HERE) -->
+![Dashboard](./docs/screenshots/main_dashboard_cd.png)
+
+### Match Analysis
+<!-- (DEPARTURE BOARD SCREENSHOT HERE) -->
+![Match](./docs/screenshots/match_cd.png)
+
+### LLM Ops
+<!-- (ANALYTICS/CHART SCREENSHOT HERE) -->
+![LLM Ops](./docs/screenshots/llmops_cd.png)
 
 ---
 
