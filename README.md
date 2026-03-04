@@ -32,15 +32,12 @@ CareerDrive is a full-stack job application tracker built for active job seekers
 ## Screenshots
 
 ### Dashboard Overview
-<!-- (FULL DASHBOARD SCREENSHOT HERE) -->
 ![Dashboard](./docs/screenshots/main_dashboard_cd.png)
 
 ### Match Analysis
-<!-- (DEPARTURE BOARD SCREENSHOT HERE) -->
 ![Match](./docs/screenshots/match_cd.png)
 
 ### LLM Ops
-<!-- (ANALYTICS/CHART SCREENSHOT HERE) -->
 ![LLM Ops](./docs/screenshots/llmops_cd.png)
 
 ---
