@@ -10,20 +10,20 @@ AI-powered job application tracker: paste a job description and get instant role
 
 ## What it does
 
-CareerDrive is a full-stack job application tracker built for active job seekers, tailored for the tech industry. Paste a job description and Gemini AI parses it instantly — extracting the company and role whilst evaluating your fit against your saved skills and experience profile. Each application receives a match percentage, a breakdown of strengths and gaps and is stored with full CRUD support. A funnel dashboard tracks your application pipeline and every AI inference is logged with token count, latency, and estimated cost.
+CareerDrive is a full-stack job application tracker built for active job seekers, tailored for the tech industry. Paste a job description and Gemini AI parses it instantly, extracting the company and role whilst evaluating your fit against your saved skills and experience profile. Each application receives a match percentage, a breakdown of strengths and gaps and is stored with full CRUD support. A funnel dashboard tracks your application pipeline and every AI inference is logged with token count, latency, and estimated cost.
 
 ---
 
 ## Features
 
-- **AI job parser** — paste a job description, auto-fills company, role, and notes via Gemini API
-- **Role-fit scoring** — match percentage with pros and cons evaluated against your saved profile
-- **Application tracking** — create, update, delete and filter applications with status tracking (Applied, Interviewing, Offered, Rejected)
-- **Application funnel** — visual progress bar showing pipeline conversion across statuses
-- **LLM ops dashboard** — every inference logged with token usage, API latency, and estimated cost in USD
-- **Google OAuth** — one-click sign in via Supabase Auth
-- **Per-user data isolation** — row-level security enforced at both the API and database layer
-- **Demo mode** — frontend demo with pre-filled data, no login required
+- **AI job parser** - paste a job description, auto-fills company, role, and notes via Gemini API
+- **Role-fit scoring** - match percentage with pros and cons evaluated against your saved profile
+- **Application tracking** - create, update, delete and filter applications with status tracking (Applied, Interviewing, Offered, Rejected)
+- **Application funnel** - visual progress bar showing pipeline conversion across statuses
+- **LLM ops dashboard** - every inference logged with token usage, API latency, and estimated cost in USD
+- **Google OAuth** - one-click sign in via Supabase Auth
+- **Per-user data isolation** - row-level security enforced at both the API and database layer
+- **Demo mode** - frontend demo with pre-filled data, no login required
 
 ---
 
@@ -202,8 +202,8 @@ create table parse_logs (
 
 ## Future Improvements
 
-- **Status history tracking** — log every status change with a timestamp to enable a Sankey diagram of application journeys
-- **URL parsing** — fetch and parse job descriptions directly from a URL, not just pasted text
-- **CI/CD pipeline** — GitHub Actions for automated testing and deployment
-- **Mobile responsive UI** — optimise layout for smaller screens
-- **Email notifications** — remind users to follow up on applications after X days
+- **Status history tracking** - log every status change with a timestamp to enable a Sankey diagram of application journeys
+- **URL parsing** - fetch and parse job descriptions directly from a URL, not just pasted text
+- **CI/CD pipeline** - GitHub Actions for automated testing and deployment
+- **Mobile responsive UI** - optimise layout for smaller screens
+- **Email notifications** - remind users to follow up on applications after X days
