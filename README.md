@@ -2,7 +2,7 @@
 
 AI-powered job application tracker: paste a job description and get instant role-fit analysis against your profile.
 
-🔗 [Live Demo](https://careerdrive.vercel.app) | 📡 [API Docs](https://careerdrive.onrender.com/docs)
+🔗 [Live Demo](https://careerdrive.vercel.app) (currently down due to free tier) | 📡 [API Docs](https://careerdrive.onrender.com/docs)
 
 ![CareerDrive Dashboard](./docs/screenshots/dashboard_cd.png)
 
